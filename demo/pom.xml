@@ -1,5 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
-
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
@@ -7,58 +5,84 @@
   <groupId>ex</groupId>
   <artifactId>demo</artifactId>
   <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
 
   <name>demo</name>
-  <!-- FIXME change it to the project's website -->
-  <url>http://www.example.com</url>
+  <url>http://maven.apache.org</url>
+  
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.source>1.7</maven.compiler.source>
-    <maven.compiler.target>1.7</maven.compiler.target>
   </properties>
-
-  <dependencies>
-   
+   <dependencies>
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <version>4.11</version>
       <scope>test</scope>
     </dependency>
-  </dependencies>
-
+   </dependencies>
+   
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
-      <plugins>
-        <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
-		
-		<plugin>
-			<groupId>org.jacoco</groupId>
-			<artifactId>jacoco-maven-plugin</artifactId>
-			<version>0.5.5.201112152213</version>
-			<configuration>
-			 <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
-			 <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
-			</configuration>
-			 <executions>
-			  <execution>
-				<id>jacoco-initialize</id>
-				<goals>
-				 <goal>prepare-agent</goal>
-				</goals>
-			  </execution>
-			  <execution>
-				<id>jacoco-site</id>
-				<phase>package</phase>
-				<goals>
-				 <goal>report</goal>
-				</goals>
-			  </execution>
-			 </executions>
-		</plugin>
-        
-        <plugin>
+   <plugins>
+     <plugin>
+      <groupId>org.codehaus.mojo</groupId>
+      <artifactId>exec-maven-plugin</artifactId>
+      <version>1.6.0</version>
+      <configuration>
+        <executable>docker</executable>
+       <arguments>
+        <argument>build</argument>
+        <argument>-t</argument>
+        <argument>myproject</argument>
+        <argument>-f</argument>
+        <argument>DockerfileSample</argument>
+       <argument>.</argument>
+      </arguments>
+      </configuration>
+     </plugin>
+     <plugin>
+      <groupId>com.spotify</groupId>
+      <artifactId>docker-maven-plugin</artifactId>
+      <version>1.0.0</version>
+      <configuration>
+        <imageName>myproject</imageName>
+        <baseImage>ubuntu</baseImage>
+        <!-- copy the service's jar file from target into the root directory of the image --> 
+        <resources>
+           <resource>
+             <targetPath>/</targetPath>
+             <directory>${project.build.directory}</directory>
+             <include>${project.build.finalName}.jar</include>
+           </resource>
+        </resources>
+      </configuration>
+     </plugin>
+     <plugin>
+      <groupId>org.jacoco</groupId>
+      <artifactId>jacoco-maven-plugin</artifactId>
+      <version>0.5.5.201112152213</version>
+      <configuration>
+       <destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+       <dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+      </configuration>
+       <executions>
+        <execution>
+         <id>jacoco-initialize</id>
+         <goals>
+          <goal>prepare-agent</goal>
+         </goals>
+        </execution>
+        <execution>
+         <id>jacoco-site</id>
+         <phase>package</phase>
+         <goals>
+          <goal>report</goal>
+         </goals>
+        </execution>
+       </executions>
+     </plugin>
+	    <plugin>
           <artifactId>maven-clean-plugin</artifactId>
           <version>3.1.0</version>
         </plugin>
@@ -96,7 +120,6 @@
           <artifactId>maven-project-info-reports-plugin</artifactId>
           <version>3.0.0</version>
         </plugin>
-      </plugins>
-    </pluginManagement>
+   </plugins>
   </build>
 </project>
